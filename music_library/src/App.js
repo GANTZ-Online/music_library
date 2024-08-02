@@ -2,7 +2,7 @@
 import { useState,useEffect } from "react"
 import Gallery from "./components/Gallery"
 import SearchBar from "./components/SearchBar"
-
+console.log("test")
 function App(){
   let [search, setSearch] = useState('')
   let [message, setMessage] = useState('Search for Music!')
