@@ -1,34 +1,45 @@
+import './App.css';
+import { useState, Suspense, useEffect } from 'react'
+import Gallery from './components/Gallery'
+import SearchBar from './components/SearchBar'
+import Spinner from './components/Spinner'
+import { createResource as fetchData } from './helper'
 
-import { useState,useEffect } from "react"
-import Gallery from "./components/Gallery"
-import SearchBar from "./components/SearchBar"
-console.log("test")
-function App(){
-  let [search, setSearch] = useState('')
+function App() {
+  let [searchTerm, setSearchTerm] = useState('')
   let [message, setMessage] = useState('Search for Music!')
-  let [data, setData] = useState([])
+  let [data, setData] = useState(null)
 
   useEffect(() => {
-      const fetchData = async () => {
-          document.title = `${search} Music`
-          const response = await fetch('https://itunes.apple.com/search?term=the%20grateful%20dead')
-          const resData = await response.json()
-          if (resData.results.length > 0) {
-              setData(resData.results)
-          } else {
-              setMessage('Not Found')
-          }
-      }
-      fetchData()
-  }, [search])
-  
+    if (searchTerm) {
+      document.title=`${searchTerm} Music`
+      console.log(fetchData(searchTerm))
+      setData(fetchData(searchTerm))
+  }
+  }, [searchTerm])
+
+  const handleSearch = (e, term) => {
+    e.preventDefault()
+    setSearchTerm(term)
+  }
+
+  const renderGallery = () => {
+    if(data){
+      return (
+        <Suspense fallback={<Spinner />}>
+          <Gallery data={data} />
+        </Suspense>
+      )
+    }
+  }
+
   return (
-      <div>
-          <SearchBar />
-          {message}
-          <Gallery />
-      </div>
-  )
+    <div className="App">
+      <SearchBar handleSearch={handleSearch} />
+      {message}
+      {renderGallery()}
+    </div>
+  );
 }
 
-export default App
+export default App;
